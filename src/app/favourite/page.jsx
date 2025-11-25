@@ -1,12 +1,11 @@
 'use client';
 import SongsList from '@/components/SongsList';
 import { getFavourite, getSongData } from '@/services/dataAPI';
-import React, { useEffect } from 'react'
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 
-const page = () => {
+const FavouritePage = () => {
   const [favouriteSongs, setFavouriteSongs] = useState([]);
   const [loading, setLoading] = useState(true);
   const { status } = useSession();
@@ -46,4 +45,4 @@ const page = () => {
   )
 }
 
-export default page
+export default FavouritePage

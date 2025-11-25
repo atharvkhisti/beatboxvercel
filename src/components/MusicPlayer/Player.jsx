@@ -69,55 +69,53 @@ const Player = ({
   }
 
   // media session metadata:
-  const mediaMetaData = activeSong?.name
-    ? {
-        title: activeSong?.name,
-        artist: activeSong?.primaryArtists || activeSong?.primary_artists,
-        album: activeSong?.album?.name || activeSong?.album || "AutoMix",
-        artwork: [
-          {
-            src: getArtworkSrc(activeSong),
-            sizes: "500x500",
-            type: "image/png",
-          },
-        ],
-      }
-    : {};
   useEffect(() => {
-    // Check if the Media Session API is available in the browser environment
-    if ("mediaSession" in navigator) {
-      // Set media metadata
-      navigator.mediaSession.metadata = new window.MediaMetadata(mediaMetaData);
+    if (!("mediaSession" in navigator)) return;
 
-      // Define media session event handlers
-      navigator.mediaSession.setActionHandler("play", onPlay);
-      navigator.mediaSession.setActionHandler("pause", onPause);
-      navigator.mediaSession.setActionHandler("previoustrack", onPreviousTrack);
-      navigator.mediaSession.setActionHandler("nexttrack", onNextTrack);
-      navigator.mediaSession.setActionHandler("seekbackward", () => {
-        setSeekTime(appTime - 5);
-      });
-      navigator.mediaSession.setActionHandler("seekforward", () => {
-        setSeekTime(appTime + 5);
-      });
-    }
-  }, [mediaMetaData]);
-  // media session handlers:
-  const onPlay = () => {
-    handlePlayPause();
-  };
+    const mediaMetaData = activeSong?.name
+      ? {
+          title: activeSong?.name,
+          artist: activeSong?.primaryArtists || activeSong?.primary_artists,
+          album: activeSong?.album?.name || activeSong?.album || "AutoMix",
+          artwork: [
+            {
+              src: getArtworkSrc(activeSong),
+              sizes: "500x500",
+              type: "image/png",
+            },
+          ],
+        }
+      : {};
 
-  const onPause = () => {
-    handlePlayPause();
-  };
+    navigator.mediaSession.metadata = new window.MediaMetadata(mediaMetaData);
 
-  const onPreviousTrack = () => {
-    handlePrevSong();
-  };
+    navigator.mediaSession.setActionHandler("play", handlePlayPause);
+    navigator.mediaSession.setActionHandler("pause", handlePlayPause);
+    navigator.mediaSession.setActionHandler("previoustrack", handlePrevSong);
+    navigator.mediaSession.setActionHandler("nexttrack", handleNextSong);
+    navigator.mediaSession.setActionHandler("seekbackward", () => {
+      setSeekTime(Math.max(appTime - 5, 0));
+    });
+    navigator.mediaSession.setActionHandler("seekforward", () => {
+      setSeekTime(appTime + 5);
+    });
 
-  const onNextTrack = () => {
-    handleNextSong();
-  };
+    return () => {
+      navigator.mediaSession.setActionHandler("play", null);
+      navigator.mediaSession.setActionHandler("pause", null);
+      navigator.mediaSession.setActionHandler("previoustrack", null);
+      navigator.mediaSession.setActionHandler("nexttrack", null);
+      navigator.mediaSession.setActionHandler("seekbackward", null);
+      navigator.mediaSession.setActionHandler("seekforward", null);
+    };
+  }, [
+    activeSong,
+    handlePlayPause,
+    handlePrevSong,
+    handleNextSong,
+    setSeekTime,
+    appTime,
+  ]);
 
   useEffect(() => {
     ref.current.volume = volume;

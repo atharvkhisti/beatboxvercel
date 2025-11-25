@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import React from "react";
 
 const Track = ({ isPlaying, isActive, activeSong, fullScreen }) => (
@@ -12,13 +13,16 @@ const Track = ({ isPlaying, isActive, activeSong, fullScreen }) => (
         isPlaying && isActive ? "animate-[spin_15s_linear_infinite]" : ""
       } hidden sm:block h-16 w-16 mr-4`}
     >
-      <img
+      <Image
         src={
-          activeSong?.image?.[2].url ||
+          activeSong?.image?.[2]?.url ||
           "https://res.cloudinary.com/dbr73rpz9/image/upload/v1690447758/chibi_qxvxq6.png"
         }
         alt="cover art"
-        className="rounded-full"
+        width={64}
+        height={64}
+        className="rounded-full h-full w-full object-cover"
+        priority={isActive}
       />
     </div>
     <div className={`w-[190px] select-none cursor-pointer`}>

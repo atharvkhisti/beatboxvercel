@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { FaPlayCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import getPixels from "get-pixels";
@@ -8,22 +9,33 @@ const SongBar = ({ playlist, i }) => {
   const [cardColor, setCardColor] = useState();
 
   useEffect(() => {
-    const src = playlist?.image?.[1]?.link;
+    let isMounted = true;
+    const src = playlist?.image?.[1]?.link || playlist?.image?.[1]?.url;
+    if (!src) {
+      setCardColor(undefined);
+      return undefined;
+    }
+
     getPixels(src, (err, pixels) => {
-      if (!err) {
+      if (!err && isMounted) {
         const data = [...pixels.data];
         const width = Math.round(Math.sqrt(data.length / 4));
         const height = width;
 
         extractColors({ data, width, height })
           .then((colors) => {
-            setCardColor(colors);
-            console.log(colors[0].red, colors[0].blue, colors[0].green);
+            if (isMounted) {
+              setCardColor(colors);
+            }
           })
           .catch(console.log);
       }
     });
-  }, []);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [playlist]);
 
   return (
     <Link href={`/playlist/${playlist?.id}`}>
@@ -39,15 +51,19 @@ const SongBar = ({ playlist, i }) => {
       >
         <h3 className=" text-base text-white mr-3 font-extrabold">{i + 1}.</h3>
         <div className="flex-1 flex flex-row justify-between items-center">
-          <img
+          <Image
             width={80}
             height={80}
             loading="lazy"
-            alt="song_img"
-            srcSet={`${playlist.image?.[0]?.link} 320w, ${playlist.image?.[1]?.link} 480w, ${playlist.image?.[2]?.link} 800w`}
-            sizes="(max-width: 320px) 280px, (max-width: 480px) 440px, 800px"
-            src={playlist.image?.[1]?.link}
-            className=" w-20 h-20 rounded-lg"
+            alt={playlist?.title || "playlist cover"}
+            src={
+              playlist.image?.[1]?.link ||
+              playlist.image?.[1]?.url ||
+              playlist.image?.[0]?.link ||
+              playlist.image?.[0]?.url ||
+              "/icon-192x192.png"
+            }
+            className=" w-20 h-20 rounded-lg object-cover"
           />
           <div className="flex-1 flex flex-col justify-center mx-3">
             <p className="font-semibold text-base w-40 lg:text-xl text-white truncate md:w-full">

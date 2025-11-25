@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import { BsPlayFill } from "react-icons/bs";
 import { useDispatch } from "react-redux";
 import {
@@ -30,9 +31,15 @@ const ListenAgainCard = ({ song, index, SongData }) => {
         <div className="flex items-center gap-5">
           <div className=" relative mb-2">
             <div className="group w-12 h-12 md:w-14 md:h-14 relative">
-              <img
-                src={song?.image?.[2]?.url || song?.image?.[2]?.link}
-                alt={song?.name}
+              <Image
+                src={
+                  song?.image?.[2]?.url ||
+                  song?.image?.[2]?.link ||
+                  song?.image?.[1]?.url ||
+                  song?.image?.[1]?.link ||
+                  "/icon-192x192.png"
+                }
+                alt={song?.name || "song artwork"}
                 width={50}
                 height={50}
                 className="rounded-lg object-cover w-12 h-12 md:w-14 md:h-14"

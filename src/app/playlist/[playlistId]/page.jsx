@@ -1,8 +1,9 @@
 import PlayButton from "@/components/PlayButton";
 import SongList from "@/components/SongsList";
 import { getplaylistData, homePageData } from "@/services/dataAPI";
+import Image from "next/image";
 
-const page = async ({ params }) => {
+const PlaylistPage = async ({ params }) => {
   // const [playlistData, setPlaylistData] = useState(null);
   // const [loading, setLoading] = useState(true);
   // const dispatch = useDispatch();
@@ -30,12 +31,13 @@ const page = async ({ params }) => {
             </div>
           </div>
         ) : (
-          <img
+          <Image
             className=" rounded-full"
-            src={playlistData?.image?.[2]?.url}
-            alt={playlistData?.title}
+            src={playlistData?.image?.[2]?.url || "/beatbox-logo.svg"}
+            alt={playlistData?.title || "Playlist artwork"}
             width={300}
             height={300}
+            priority
           />
         )}
 
@@ -59,7 +61,7 @@ const page = async ({ params }) => {
   );
 };
 
-export default page;
+export default PlaylistPage;
 
 // 4 hour
 export const revalidate = 14400;

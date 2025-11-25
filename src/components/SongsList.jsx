@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Image from "next/image";
 import {
   playPause,
   setActiveSong,
@@ -103,11 +104,11 @@ const SongsList = ({
             >
               <div className="flex items-center gap-5">
                 <div className=" relative mb-3">
-                  <img
-                    src={song?.image?.[2]?.url}
-                    alt={song?.name}
-                    width={50}
-                    height={50}
+                  <Image
+                    src={song?.image?.[2]?.url || "/beatbox-logo.svg"}
+                    alt={song?.name || "Song artwork"}
+                    width={56}
+                    height={56}
                     className=" rounded-lg w-12 h-12 md:w-14 md:h-14 object-cover"
                   />
                   {activeSong?.id === song?.id ? (

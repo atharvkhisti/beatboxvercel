@@ -1,7 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["c.saavncdn.com", "static.saavncdn.com", "www.jiosaavn.com"],
+    domains: [
+      "c.saavncdn.com",
+      "static.saavncdn.com",
+      "www.jiosaavn.com",
+      "res.cloudinary.com",
+      "lh3.googleusercontent.com",
+    ],
   },
 };
 

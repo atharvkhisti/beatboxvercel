@@ -1,40 +1,72 @@
 "use client";
-import SwiperLayout from "@/components/Homepage/Swiper";
-import SongCard from "@/components/Homepage/SongCard";
-import { getSearchedData, getSongData } from "@/services/dataAPI";
-import React, { useEffect } from "react";
-import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { SwiperSlide } from "swiper/react";
 import { BsPlayFill } from "react-icons/bs";
-import { useDispatch } from "react-redux";
+import Image from "next/image";
+import Link from "next/link";
+import SwiperLayout from "@/components/Homepage/Swiper";
+import SongCard from "@/components/Homepage/SongCard";
+import SongListSkeleton from "@/components/SongListSkeleton";
 import {
   playPause,
   setActiveSong,
   setFullScreen,
 } from "@/redux/features/playerSlice";
-import Image from "next/image";
-import Link from "next/link";
-import SongListSkeleton from "@/components/SongListSkeleton";
 import { setProgress } from "@/redux/features/loadingBarSlice";
+import { getSearchedData, getSongData } from "@/services/dataAPI";
 
-const page = ({ params }) => {
+const SearchPage = ({ params }) => {
   const dispatch = useDispatch();
-  const [query, setQuery] = useState(params.query);
+  const searchQuery = params?.query ?? "";
   const [searchedData, setSearchedData] = useState(null);
   const [loading, setLoading] = useState(true);
   const { currentSongs } = useSelector((state) => state.player);
+  const decodedQuery = useMemo(() => {
+    try {
+      return decodeURIComponent(searchQuery);
+    } catch {
+      return searchQuery;
+    }
+  }, [searchQuery]);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchData = async () => {
+      if (!searchQuery) {
+        if (isMounted) {
+          setSearchedData(null);
+          setLoading(false);
+        }
+        return;
+      }
+
+      setLoading(true);
       dispatch(setProgress(70));
-      const response = await getSearchedData(query);
-      setSearchedData(response);
-      setLoading(false);
-      dispatch(setProgress(100));
+      try {
+        const response = await getSearchedData(searchQuery);
+        if (isMounted) {
+          setSearchedData(response);
+        }
+      } catch {
+        if (isMounted) {
+          setSearchedData(null);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+        dispatch(setProgress(100));
+      }
     };
+
     fetchData();
-  }, [query]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [dispatch, searchQuery]);
 
   const handlePlayClick = async (song) => {
     if (song?.type === "song") {
@@ -61,11 +93,13 @@ const page = ({ params }) => {
       <div className="w-11/12 m-auto mt-16">
         <div className="mt-10 text-gray-200">
           <h1 className="text-3xl font-bold">
-            Search results for "{query.replaceAll("%20", " ")}"
+            Search results for &ldquo;{decodedQuery}&rdquo;
           </h1>
           <div className="mt-10 text-gray-200">
             <h2 className="text-lg lg:text-4xl font-semibold">Songs</h2>
-            {searchedData && searchedData?.songs?.results?.length > 0 ? (
+            {loading ? (
+              <SongListSkeleton />
+            ) : searchedData?.songs?.results?.length > 0 ? (
               <div className="mt-5">
                 {searchedData?.songs?.results?.map((song, index) => (
                   <div
@@ -77,12 +111,18 @@ const page = ({ params }) => {
                   >
                     <div className="flex items-center gap-5">
                       <div className=" relative">
-                        <img
-                          src={song?.image?.[2]?.url}
-                          alt={song?.title}
+                        <Image
+                          src={
+                            song?.image?.[2]?.url ||
+                            song?.image?.[2]?.link ||
+                            song?.image?.[1]?.url ||
+                            song?.image?.[1]?.link ||
+                            "/icon-192x192.png"
+                          }
+                          alt={song?.title || "song artwork"}
                           width={50}
                           height={50}
-                          className="mb-3"
+                          className="mb-3 object-cover"
                         />
                         <BsPlayFill
                           size={25}
@@ -108,13 +148,13 @@ const page = ({ params }) => {
                 ))}
               </div>
             ) : (
-              <SongListSkeleton />
+              <p className="mt-5 text-sm text-gray-400">No songs found.</p>
             )}
           </div>
 
           <div className="mt-10 text-gray-200">
             <SwiperLayout title={"Albums"}>
-              {searchedData &&
+              {!loading &&
                 searchedData?.albums?.results?.length > 0 &&
                 searchedData?.albums?.results?.map((song) => (
                   <SwiperSlide key={song?.id}>
@@ -125,7 +165,7 @@ const page = ({ params }) => {
           </div>
           <div className="mt-10 text-gray-200">
             <SwiperLayout title={"Artists"}>
-              {searchedData &&
+              {!loading &&
                 searchedData?.artists?.results?.length > 0 &&
                 searchedData?.artists?.results?.map((artist) => (
                   <SwiperSlide key={artist?.id}>
@@ -156,8 +196,8 @@ const page = ({ params }) => {
           </div>
           <div className="mt-10 text-gray-200">
             <SwiperLayout title={"Playlists"}>
-              {searchedData &&
-                searchedData?.albums?.results?.length > 0 &&
+              {!loading &&
+                searchedData?.playlists?.results?.length > 0 &&
                 searchedData?.playlists?.results?.map((song) => (
                   <SwiperSlide key={song?.id}>
                     <SongCard song={song} />
@@ -171,4 +211,4 @@ const page = ({ params }) => {
   );
 };
 
-export default page;
+export default SearchPage;

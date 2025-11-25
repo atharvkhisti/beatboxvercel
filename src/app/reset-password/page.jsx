@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
 
 
-const page = () => {
+const ResetPasswordPage = () => {
     const dispatch = useDispatch();
     const [formData, setFormData] = React.useState({
         email: '',
@@ -56,4 +56,4 @@ const page = () => {
 </div>  )
 }
 
-export default page
+export default ResetPasswordPage

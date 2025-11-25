@@ -1,6 +1,5 @@
 "use client";
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { toast } from "react-hot-toast";
@@ -10,7 +9,7 @@ import { setProgress } from "@/redux/features/loadingBarSlice";
 import { useSession } from "next-auth/react";
 import { FaGoogle } from "react-icons/fa";
 
-const page = () => {
+const LoginPage = () => {
   const { status } = useSession();
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
@@ -122,7 +121,7 @@ const page = () => {
               </button>
             </div>
             <p className=" w-full flex justify-center gap-2">
-              Don't have an account?{" "}
+              Don&rsquo;t have an account?{" "}
               <Link href={"/signup"} className=" text-cyan-400 font-semibold">
                 {" "}
                 Sign Up
@@ -135,4 +134,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default LoginPage;

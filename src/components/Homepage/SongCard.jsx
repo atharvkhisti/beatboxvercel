@@ -1,6 +1,7 @@
 "use client";
 import React, { memo, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useDispatch } from "react-redux";
 import PlayPause from "../PlayPause";
 import {
@@ -92,21 +93,25 @@ const SongCard = ({ song, isPlaying, activeSong }) => {
               handlePlay={handlePlayClick}
             />
           </div>
-          <img
+          <Image
             width={200}
             height={200}
             loading="lazy"
-            alt="song_img"
-            srcSet={`${song.image?.[0]?.url || song.image?.[0]?.link} 320w, ${
-              song.image?.[1]?.url || song.image?.[1]?.link
-            } 480w, ${song.image?.[2]?.url || song.image?.[2]?.link} 800w`}
-            sizes="(max-width: 320px) 280px, (max-width: 480px) 440px, 800px"
-            src={song.image?.[1]?.url || song.image?.[1]?.link}
+            alt={song?.name || song?.title || "song artwork"}
+            src={
+              song.image?.[2]?.url ||
+              song.image?.[2]?.link ||
+              song.image?.[1]?.url ||
+              song.image?.[1]?.link ||
+              song.image?.[0]?.url ||
+              song.image?.[0]?.link ||
+              "/icon-192x192.png"
+            }
             className={`${
               song.type === "playlist" && song?.subtitle === "JioSaavn"
                 ? "rounded-full"
                 : "rounded-lg"
-            } w-full h-full `}
+            } w-full h-full object-cover`}
           />
         </div>
 

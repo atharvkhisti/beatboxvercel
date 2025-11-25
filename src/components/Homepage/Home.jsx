@@ -1,6 +1,5 @@
 "use client";
 import { homePageData, getAutoMix } from "@/services/dataAPI";
-import React from "react";
 import { useEffect, useState } from "react";
 import { SwiperSlide } from "swiper/react";
 import SongCard from "./SongCard";
@@ -40,15 +39,29 @@ const Home = () => {
 
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchData = async () => {
-      dispatch(setProgress(70))
-      const res = await homePageData(languages);
-      setData(res);
-      dispatch(setProgress(100))
-      setLoading(false);
+      dispatch(setProgress(70));
+      try {
+        const res = await homePageData(languages);
+        if (isMounted) {
+          setData(res);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+        dispatch(setProgress(100));
+      }
     };
+
     fetchData();
-  }, [languages]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [dispatch, languages]);
 
   const handleStartAutoMix = async () => {
     try {
@@ -84,7 +97,11 @@ const Home = () => {
   return (
     <div>
       <OnlineStatus />
-      <h1 className='text-4xl font-bold mx-2 m-9 text-white flex gap-2'>"{salutation}  <GiMusicalNotes />"</h1>
+      <h1 className='text-4xl font-bold mx-2 m-9 text-white flex gap-2'>
+        <span>&ldquo;{salutation}</span>
+        <GiMusicalNotes />
+        <span>&rdquo;</span>
+      </h1>
 
       {/* BeatBox AutoMix CTA */}
       <div className="mx-4 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">

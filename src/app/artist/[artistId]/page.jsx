@@ -10,13 +10,11 @@ import {
   getArtistSongs,
 } from "@/services/dataAPI";
 import Image from "next/image";
-import React from "react";
-import { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { SwiperSlide } from "swiper/react";
 
-const page = ({ params }) => {
+const ArtistPage = ({ params }) => {
   const dispatch = useDispatch();
   const [artistDetails, setArtistDetails] = useState({});
   const [artistSongs, setArtistSongs] = useState([]);
@@ -40,7 +38,7 @@ const page = ({ params }) => {
       setLoading(false);
     };
     fetchData();
-  }, []);
+  }, [dispatch, params.artistId]);
 
   return (
     <div className="w-11/12 m-auto">
@@ -65,11 +63,12 @@ const page = ({ params }) => {
         ) : (
           <div className=" relative">
             <Image
-              src={artistDetails?.image?.[2]?.url}
+              src={artistDetails?.image?.[2]?.url || "/beatbox-logo.svg"}
               width={300}
               height={300}
-              alt={artistDetails?.name}
+              alt={artistDetails?.name || "Artist"}
               className="lg:w-[400px] lg:h-[400px]"
+              priority
             />
             <div className="absolute lg:w-[400px] w-[300px] inset-0 bg-gradient-to-t from-black via-transparent"></div>
           </div>
@@ -120,4 +119,4 @@ const page = ({ params }) => {
   );
 };
 
-export default page;
+export default ArtistPage;

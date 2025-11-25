@@ -4,10 +4,9 @@ import { resetPassword } from '@/services/dataAPI';
 import React from 'react'
 import { toast } from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
-import { redirect } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
-const page = ({params}) => {
+const ResetPasswordTokenPage = ({params}) => {
     const Router = useRouter();
     const dispatch = useDispatch();
     const [formData, setFormData] = React.useState({
@@ -73,4 +72,4 @@ const page = ({params}) => {
   )
 }
 
-export default page
+export default ResetPasswordTokenPage

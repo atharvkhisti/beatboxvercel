@@ -1,6 +1,7 @@
 import Lyrics from "./Lyrics";
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useDispatch } from "react-redux";
 import { setFullScreen } from "@/redux/features/playerSlice";
 import { useSwipeable } from "react-swipeable";
@@ -32,10 +33,13 @@ const FullscreenTrack = ({
           {...handlers}
           className=" h-80 w-80 lg:h-[500px] lg:w-[500px] sm:mt-5 mt-28 "
         >
-          <img
-            src={activeSong?.image?.[2].url}
+          <Image
+            src={activeSong?.image?.[2]?.url || "/beatbox-logo.svg"}
             alt="cover art"
-            className="rounded-2xl"
+            width={500}
+            height={500}
+            className="rounded-2xl object-cover h-full w-full"
+            priority={fullScreen}
           />
         </div>
         <div

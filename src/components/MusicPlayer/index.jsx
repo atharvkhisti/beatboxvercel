@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   nextSong,
@@ -48,7 +48,7 @@ const MusicPlayer = () => {
 
   useEffect(() => {
     if (currentSongs?.length) dispatch(playPause(true));
-  }, [currentIndex]);
+  }, [currentIndex, currentSongs?.length, dispatch]);
 
   useEffect(() => {
     const fetchFavourites = async () => {
@@ -98,33 +98,34 @@ const MusicPlayer = () => {
     };
   }, [fullScreen]);
 
-  // Hotkey for play pause
-  const handleKeyPress = (event) => {
-    // Check if the pressed key is the spacebar (keyCode 32 or key " ")
-    if (!isTyping && (event.keyCode === 32 || event.key === " ")) {
-      event.preventDefault();
-      handlePlayPause();
-    }
-  };
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeyPress);
+  const handlePlayPause = useCallback(
+    (e) => {
+      e?.stopPropagation();
+      if (!isActive) return;
 
-    // Clean up the event listener when the component unmounts
+      if (isPlaying) {
+        dispatch(playPause(false));
+      } else {
+        dispatch(playPause(true));
+      }
+    },
+    [dispatch, isActive, isPlaying]
+  );
+
+  // Hotkey for play pause
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (!isTyping && (event.keyCode === 32 || event.key === " ")) {
+        event.preventDefault();
+        handlePlayPause();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyPress);
     return () => {
       document.removeEventListener("keydown", handleKeyPress);
     };
-  }, [handleKeyPress]);
-
-  const handlePlayPause = (e) => {
-    e?.stopPropagation();
-    if (!isActive) return;
-
-    if (isPlaying) {
-      dispatch(playPause(false));
-    } else {
-      dispatch(playPause(true));
-    }
-  };
+  }, [handlePlayPause, isTyping]);
 
   const handleNextSong = (e) => {
     e?.stopPropagation();

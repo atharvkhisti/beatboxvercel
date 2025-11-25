@@ -1,13 +1,12 @@
 'use client';
 import SongsList from '@/components/SongsList';
 import {getSongData } from '@/services/dataAPI';
-import React, { useEffect } from 'react'
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import { getSinglePlaylist } from '@/services/playlistApi';
 
-const page = ({params}) => {
+const UserPlaylistPage = ({params}) => {
   const [loading, setLoading] = useState(true);
   const [songs, setSongs] = useState([]);
   const [playlist, setPlaylist] = useState({});
@@ -27,7 +26,7 @@ const page = ({params}) => {
       setLoading(false);
     }
     fetchFavorites();
-  }, []);
+  }, [params.playlistId]);
 
   // redirect if user is authenticated
   if (status === 'loading') {
@@ -51,4 +50,4 @@ const page = ({params}) => {
   )
 }
 
-export default page
+export default UserPlaylistPage

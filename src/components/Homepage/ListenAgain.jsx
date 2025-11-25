@@ -3,7 +3,6 @@ import ListenAgainCard from "../ListenAgainCard";
 import { useLayoutEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setAutoAdd } from "@/redux/features/playerSlice";
-import { setLanguages } from "@/redux/features/languagesSlice";
 
 const ListenAgain = () => {
   const [songHistory, setSongHistory] = useState([]);
@@ -21,7 +20,7 @@ const ListenAgain = () => {
           : false
       )
     );
-  }, []);
+  }, [dispatch]);
 
   return (
     <div>

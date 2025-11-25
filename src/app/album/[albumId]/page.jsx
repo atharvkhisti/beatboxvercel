@@ -3,13 +3,12 @@ import { setProgress } from "@/redux/features/loadingBarSlice";
 import { playPause, setActiveSong } from "@/redux/features/playerSlice";
 import { getAlbumData } from "@/services/dataAPI";
 import Link from "next/link";
-import React, { useEffect } from "react";
-import { useState } from "react";
-import { BsPlayFill } from "react-icons/bs";
+import Image from "next/image";
+import React, { useEffect, useState } from "react";
+import { BsPlayFill, BsFillPlayFill } from "react-icons/bs";
 import { useDispatch } from "react-redux";
-import { BsFillPlayFill } from "react-icons/bs";
 
-const page = ({ params }) => {
+const AlbumPage = ({ params }) => {
   const [albumData, setAlbumData] = useState(null);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
@@ -24,7 +23,7 @@ const page = ({ params }) => {
       setLoading(false);
     };
     fetchData();
-  }, []);
+  }, [dispatch, params.albumId]);
 
   // Utility function to format the duration in seconds to "m:ss" format (without leading zero for minutes)
   function formatDuration(durationInSeconds) {
@@ -64,12 +63,13 @@ const page = ({ params }) => {
             </div>
           </div>
         ) : (
-          <img
+          <Image
             className=" rounded-lg"
-            src={albumData?.image?.[2]?.url}
-            alt={albumData?.title}
+            src={albumData?.image?.[2]?.url || "/beatbox-logo.svg"}
+            alt={albumData?.title || "Album artwork"}
             width={300}
             height={300}
+            priority
           />
         )}
 
@@ -155,4 +155,4 @@ const page = ({ params }) => {
   );
 };
 
-export default page;
+export default AlbumPage;

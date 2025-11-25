@@ -1,17 +1,14 @@
 "use client";
-import { setProgress } from "@/redux/features/loadingBarSlice";
-import Link from "next/link";
-import React from "react";
 import { useState } from "react";
+import Link from "next/link";
+import { redirect, useRouter } from "next/navigation";
+import { FaGoogle } from "react-icons/fa";
+import { signIn, useSession } from "next-auth/react";
 import { toast } from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
-import { signIn } from "next-auth/react";
-import { FaGoogle } from "react-icons/fa";
+import { setProgress } from "@/redux/features/loadingBarSlice";
 
-const page = () => {
+const SignupPage = () => {
   const { status } = useSession();
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -159,4 +156,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default SignupPage;
